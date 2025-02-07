@@ -2,8 +2,6 @@ package de.keksuccino.fancymenu;
 
 import de.keksuccino.fancymenu.commands.Commands;
 import de.keksuccino.fancymenu.networking.PacketHandler;
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class FancyMenu extends JavaPlugin {
