@@ -2,18 +2,5 @@ name: FancyMenu-Plugin
 version: '1.0'
 main: de.keksuccino.fancymenu.FancyMenu
 api-version: '1.20'
-authors: [ Happy_FZM , Keksuccino]
+authors: [ Happy_FZM , Keksuccino ]
 description: FancyMenu Mod for Bukkit
-#commands:
-#  closeguiscreen:
-#    description: "Close the current GUI"
-#    usage: "/closeguiscreen [targets]"
-#    permission: fancymenu.command.closeguiscreen
-#  openguiscreen:
-#    description: "Open a GUI"
-#    usage: "/openguiscreen <screen_identifier> <target_player>"
-#    permission: fancymenu.command.openguiscreen
-#  fmvariable:
-#    description: "Set and get FancyMenu variables"
-#    usage: "/fmvariable <get_or_set> <variable_name> [<send_chat_feedback>] [<set_to_value>]"
-#    permission: fancymenu.command.fmvariable

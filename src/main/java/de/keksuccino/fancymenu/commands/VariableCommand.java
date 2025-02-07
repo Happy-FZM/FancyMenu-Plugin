@@ -60,9 +60,8 @@ public class VariableCommand {
 
     }
 
-    public static List<String> getVariableSuggestions(CommandSender sender) {
+    private static List<String> getVariableSuggestions(CommandSender sender) {
         if (sender instanceof Player player) {
-            // Look up friends in a database or file
             return CACHED_VARIABLE_SUGGESTIONS.get(player.getUniqueId().toString());
         } else {
             return new ArrayList<>();
