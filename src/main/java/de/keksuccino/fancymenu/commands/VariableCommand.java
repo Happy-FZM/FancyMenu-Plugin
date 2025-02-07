@@ -39,7 +39,7 @@ public class VariableCommand {
                 .withArguments(new BooleanArgument("send_chat_feedback"))
                 .withArguments(new TextArgument("set_to_value").replaceSuggestions(ArgumentSuggestions.strings("<set_to_value>")))
                 .withOptionalArguments(new EntitySelectorArgument.ManyPlayers("target_players").withPermission(CommandPermission.OP))
-                .executesPlayer((sender, args) -> {
+                .executes((sender, args) -> {
 
                     String variable_name = (String) args.get("variable_name");
                     Boolean send_chat_feedback = (Boolean) args.get("send_chat_feedback");
