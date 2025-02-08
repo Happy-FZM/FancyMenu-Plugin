@@ -1,6 +1,13 @@
 name: FancyMenu-Plugin
-version: '1.0'
+version: '1.1'
 main: de.keksuccino.fancymenu.FancyMenu
 api-version: '1.20'
 authors: [ Happy_FZM , Keksuccino ]
 description: FancyMenu Mod for Bukkit
+permissions:
+  minecraft.command.closeguiscreen:
+    default: true
+  minecraft.command.openguiscreen:
+    default: true
+  minecraft.command.fmvariable:
+    default: true
