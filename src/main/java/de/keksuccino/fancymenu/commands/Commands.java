@@ -6,6 +6,7 @@ public class Commands {
         CloseGuiScreenCommand.register();
         OpenGuiScreenCommand.register();
         VariableCommand.register();
+        LayoutCommand.register();
     }
 
 }

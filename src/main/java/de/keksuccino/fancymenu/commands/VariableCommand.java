@@ -62,7 +62,11 @@ public class VariableCommand {
 
     private static List<String> getVariableSuggestions(CommandSender sender) {
         if (sender instanceof Player player) {
-            return CACHED_VARIABLE_SUGGESTIONS.get(player.getUniqueId().toString());
+            List<String> l = new ArrayList<>(Objects.requireNonNullElse(CACHED_VARIABLE_SUGGESTIONS.get(player.getUniqueId().toString()), new ArrayList<>()));
+            if (l.isEmpty()) {
+                l.add("<no_variables_found>");
+            }
+            return l;
         } else {
             return new ArrayList<>();
         }
