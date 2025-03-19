@@ -1,5 +1,5 @@
 name: FancyMenu-Plugin
-version: '1.1'
+version: '1.2'
 main: de.keksuccino.fancymenu.FancyMenu
 api-version: '1.20'
 authors: [ Happy_FZM , Keksuccino ]
@@ -10,4 +10,6 @@ permissions:
   minecraft.command.openguiscreen:
     default: true
   minecraft.command.fmvariable:
+    default: true
+  minecraft.command.fmlayout:
     default: true

@@ -27,7 +27,7 @@ public class LayoutCommand {
                 .withArguments(arguments)
                 .withArguments(new BooleanArgument("enabled"))
                 .withOptionalArguments(new EntitySelectorArgument.ManyPlayers("target_players").withPermission(CommandPermission.OP))
-                .executesPlayer((sender, args) -> {
+                .executes((sender, args) -> {
 
                     String layout_name = (String) args.get("layout_name");
                     Boolean enabled = (Boolean) args.get("enabled");
