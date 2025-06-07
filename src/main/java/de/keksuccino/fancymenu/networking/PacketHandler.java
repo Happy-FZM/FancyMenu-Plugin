@@ -21,7 +21,11 @@ public class PacketHandler {
     private static BiConsumer<Player, String> sendToClientPlayerAndDataConsumer = null;
     private static final String CHANNEL = "fancymenu:play";
     private static final String CHANNEL_FABRIC = "fancymenu:packet_bridge";
+    private static final String CHANNEL_FABRIC_NEW = "minecraft:fancymenu_packet_bridge";
     private static final Map<String, Dispatcher> CACHED_PLAYER_CLIENT = Collections.synchronizedMap(new HashMap<>());
+    private static Dispatcher FORGE;
+    private static Dispatcher FABRIC;
+    private static Dispatcher FABRIC_NEW;
 
 
     public static void init() {
@@ -30,10 +34,19 @@ public class PacketHandler {
 
     public PacketHandler() {
         this.plugin = FancyMenu.getInstance();
+
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, CHANNEL);
-        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL, new ForgeDispatcher());
+        FORGE = new ForgeDispatcher();
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL, FORGE);
+
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, CHANNEL_FABRIC);
-        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL_FABRIC, new FabricDispatcher());
+        FABRIC = new FabricDispatcher();
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL_FABRIC, FABRIC);
+
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, CHANNEL_FABRIC_NEW);
+        FABRIC_NEW = new FabricNewDispatcher();
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL_FABRIC_NEW, FABRIC_NEW);
+
         sendToClientPlayerAndDataConsumer = this::sendToClient;
         Packets.registerAll();
     }
@@ -42,6 +55,10 @@ public class PacketHandler {
         Dispatcher dispatcher = CACHED_PLAYER_CLIENT.get(player.getName());
         if (dispatcher != null) {
             dispatcher.sendToClient(player, dataWithIdentifier);
+        } else {
+            FORGE.sendToClient(player, dataWithIdentifier);
+            FABRIC.sendToClient(player, dataWithIdentifier);
+            FABRIC_NEW.sendToClient(player, dataWithIdentifier);
         }
     }
 
@@ -68,7 +85,7 @@ public class PacketHandler {
         return null;
     }
 
-    private static void handlePacket(Player player, String dataWithIdentifier){
+    private static void handlePacket(Player player, String dataWithIdentifier) {
         if (!dataWithIdentifier.contains(":")) return;
         String[] dataSplit = dataWithIdentifier.split(":", 2);
         PacketCodec<?> codec = PacketRegistry.getCodec(dataSplit[0]);
@@ -143,6 +160,29 @@ public class PacketHandler {
             buffer.writeUtf("client");
             buffer.writeUtf(dataWithIdentifier);
             player.sendPluginMessage(FancyMenu.getInstance(), CHANNEL_FABRIC, buffer.array());
+        }
+
+    }
+
+    public static class FabricNewDispatcher extends Dispatcher {
+
+        @Override
+        public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+            PacketHandler.CACHED_PLAYER_CLIENT.put(player.getName(), this);
+            FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.wrappedBuffer(message));
+            String side = buffer.readUtf();
+            String dataWithIdentifier = buffer.readUtf();
+            if ("server".equals(side)) {
+                handlePacket(player, dataWithIdentifier);
+            }
+        }
+
+        @Override
+        protected void sendToClient(final Player player, final String dataWithIdentifier) {
+            FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+            buffer.writeUtf("client");
+            buffer.writeUtf(dataWithIdentifier);
+            player.sendPluginMessage(FancyMenu.getInstance(), CHANNEL_FABRIC_NEW, buffer.array());
         }
 
     }
