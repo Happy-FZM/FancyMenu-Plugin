@@ -22,10 +22,12 @@ public class PacketHandler {
     private static final String CHANNEL = "fancymenu:play";
     private static final String CHANNEL_FABRIC = "fancymenu:packet_bridge";
     private static final String CHANNEL_FABRIC_NEW = "minecraft:fancymenu_packet_bridge";
+    private static final String CHANNEL_NEOFORGE = "fancymenu:fancymenu_bridge_packet";
     private static final Map<String, Dispatcher> CACHED_PLAYER_CLIENT = Collections.synchronizedMap(new HashMap<>());
     private static Dispatcher FORGE;
     private static Dispatcher FABRIC;
-    private static Dispatcher FABRIC_NEW;
+    private static Dispatcher NEW_FABRIC;
+    private static Dispatcher NEOFORGE;
 
 
     public static void init() {
@@ -43,9 +45,14 @@ public class PacketHandler {
         FABRIC = new FabricDispatcher();
         Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL_FABRIC, FABRIC);
 
+        // Support 1.21+
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, CHANNEL_FABRIC_NEW);
-        FABRIC_NEW = new FabricNewDispatcher();
-        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL_FABRIC_NEW, FABRIC_NEW);
+        NEW_FABRIC = new NewFabricDispatcher();
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL_FABRIC_NEW, NEW_FABRIC);
+
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, CHANNEL_NEOFORGE);
+        NEOFORGE = new NeoForgeDispatcher();
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, CHANNEL_NEOFORGE, NEOFORGE);
 
         sendToClientPlayerAndDataConsumer = this::sendToClient;
         Packets.registerAll();
@@ -58,7 +65,8 @@ public class PacketHandler {
         } else {
             FORGE.sendToClient(player, dataWithIdentifier);
             FABRIC.sendToClient(player, dataWithIdentifier);
-            FABRIC_NEW.sendToClient(player, dataWithIdentifier);
+            NEW_FABRIC.sendToClient(player, dataWithIdentifier);
+            NEOFORGE.sendToClient(player, dataWithIdentifier);
         }
     }
 
@@ -164,25 +172,30 @@ public class PacketHandler {
 
     }
 
-    public static class FabricNewDispatcher extends Dispatcher {
-
-        @Override
-        public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-            PacketHandler.CACHED_PLAYER_CLIENT.put(player.getName(), this);
-            FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.wrappedBuffer(message));
-            String side = buffer.readUtf();
-            String dataWithIdentifier = buffer.readUtf();
-            if ("server".equals(side)) {
-                handlePacket(player, dataWithIdentifier);
-            }
-        }
+    public static class NewFabricDispatcher extends FabricDispatcher {
 
         @Override
         protected void sendToClient(final Player player, final String dataWithIdentifier) {
-            FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
+            FriendlyByteBuf buffer = new FriendlyByteBuf();
             buffer.writeUtf("client");
             buffer.writeUtf(dataWithIdentifier);
-            player.sendPluginMessage(FancyMenu.getInstance(), CHANNEL_FABRIC_NEW, buffer.array());
+            byte[] data = new byte[buffer.writerIndex()];
+            buffer.getBytes(0, data);
+            player.sendPluginMessage(FancyMenu.getInstance(), CHANNEL_FABRIC_NEW, data);
+        }
+
+    }
+
+    public static class NeoForgeDispatcher extends NewFabricDispatcher {
+
+        @Override
+        protected void sendToClient(final Player player, final String dataWithIdentifier) {
+            FriendlyByteBuf buffer = new FriendlyByteBuf();
+            buffer.writeUtf("client");
+            buffer.writeUtf(dataWithIdentifier);
+            byte[] data = new byte[buffer.writerIndex()];
+            buffer.getBytes(0, data);
+            player.sendPluginMessage(FancyMenu.getInstance(), CHANNEL_NEOFORGE, data);
         }
 
     }
