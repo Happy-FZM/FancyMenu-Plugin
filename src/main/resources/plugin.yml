@@ -1,5 +1,5 @@
 name: FancyMenu-Plugin
-version: '1.4'
+version: '1.5'
 main: de.keksuccino.fancymenu.FancyMenu
 api-version: '1.20'
 authors: [ Happy_FZM , Keksuccino ]
