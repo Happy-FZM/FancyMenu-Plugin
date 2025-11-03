@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'de.keksuccino'
-version = '1.5'
+version = '1.6'
 
 repositories {
     mavenCentral()
@@ -24,7 +24,8 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly('io.netty:netty-all:4.1.68.Final')
-    implementation "dev.jorel:commandapi-bukkit-shade:10.1.2"
+    compileOnly("dev.jorel:commandapi-spigot-core:11.0.0")
+//    implementation "dev.jorel:commandapi-bukkit-shade:10.1.2"
 }
 
 def targetJavaVersion = 17
